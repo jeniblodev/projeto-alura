@@ -10,10 +10,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "course")
 public class Course {
 
     @Id
@@ -29,10 +31,13 @@ public class Course {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name = "inactivation_date")
     private LocalDateTime inactivationDate = LocalDateTime.now();
 
     @Deprecated
     public Course() {}
+
+
 
     public Course(String name, String code, String description, Status status) {
         this.name = name;
@@ -48,6 +53,10 @@ public class Course {
     public String getDescription() { return description; }
 
     public Status getStatus() { return status; }
+
+    public User getInstructor() {
+        return instructor;
+    }
 
     public LocalDateTime getInactivationDate() { return inactivationDate; }
 }

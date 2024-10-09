@@ -1,9 +1,12 @@
 package br.com.alura.ProjetoAlura.user;
 
+import br.com.alura.ProjetoAlura.course.Course;
 import br.com.alura.ProjetoAlura.util.EncryptUtil;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -20,6 +23,9 @@ public class User {
 
     private String email;
     private String password;
+
+    @OneToMany(mappedBy = "instructor")
+    private List<Course> courses = new ArrayList<>();
 
     @Deprecated
     public User() {}

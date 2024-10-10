@@ -54,4 +54,5 @@ public class NewCourseDTO {
         this.description = description;
     }
 
+    public Course toModel(User instructor) { return new Course(name, code, description, instructor);}
 }

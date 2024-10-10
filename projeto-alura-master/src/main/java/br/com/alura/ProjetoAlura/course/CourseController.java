@@ -36,11 +36,11 @@ public class CourseController {
     }
 
     @PostMapping("/course/new")
-    public ResponseEntity createCourse(@Valid @RequestBody NewCourseDTO newCourse) throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity createCourse(@Valid @RequestBody NewCourseDTO newCourse) {
         // TODO: Implementar a Questão 1 - Cadastro de Cursos aqui...
 
         User instructor =
-                userRepository.findById(newCourse.getInstructorId()).orElseThrow(() -> new ChangeSetPersister.NotFoundException());
+                userRepository.findUserById(newCourse.getInstructorId());
 
         if (!instructor.getRole().equals((Role.INSTRUCTOR))) {
             return ResponseEntity.badRequest().body("Este usuário não está registrado como instrutor e somente instrutores podem ser vinculados a cursos.");
@@ -55,12 +55,7 @@ public class CourseController {
             return ResponseEntity.badRequest().body("Código já cadastrado no sistema");
         }
 
-        Course course = new Course();
-        course.setName(newCourse.getName());
-        course.setCode(newCourse.getCode());
-        course.setInstructor(instructor);
-        course.setDescription(newCourse.getDescription());
-        course.setInactivationDate(null);
+        Course course = newCourse.toModel(instructor);
 
         courseRepository.save(course);
         return ResponseEntity.status(HttpStatus.CREATED).build();

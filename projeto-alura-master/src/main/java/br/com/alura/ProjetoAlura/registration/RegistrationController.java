@@ -52,10 +52,7 @@ public class RegistrationController {
             return ResponseEntity.badRequest().body("Você já está matriculado neste curso.");
         }
 
-        Enrollment enrollment = new Enrollment();
-        enrollment.setUser(user);
-        enrollment.setCourse(course);
-        enrollment.setRegistrationDate(LocalDateTime.now());
+        Enrollment enrollment = newRegistration.toModel(user, course);
 
         registrationRepository.save(enrollment);
         return ResponseEntity.status(HttpStatus.CREATED).build();

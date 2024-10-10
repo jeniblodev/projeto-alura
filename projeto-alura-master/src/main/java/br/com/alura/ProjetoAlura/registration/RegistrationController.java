@@ -64,33 +64,23 @@ public class RegistrationController {
     @GetMapping("/registration/report")
     public ResponseEntity<List<RegistrationReportItem>> report() {
         List<RegistrationReportItem> items = new ArrayList<>();
-
         // TODO: Implementar a Questão 4 - Relatório de Cursos Mais Acessados aqui...
 
-        // Dados fictícios abaixo que devem ser substituídos
-        items.add(new RegistrationReportItem(
-                "Java para Iniciantes",
-                "java",
-                "Charles",
-                "charles@alura.com.br",
-                10L
-        ));
+        for (Object[] row : courseRepository.findCoursesWithEnrollmentCount()) {
+            String courseName = (String) row[0];
+            String courseCode = (String) row [1];
+            String instructorName = (String) row [2];
+            String instructorEmail = (String) row [3];
+            Long totalEnrollments = (Long) row [4];
 
-        items.add(new RegistrationReportItem(
-                "Spring para Iniciantes",
-                "spring",
-                "Charles",
-                "charles@alura.com.br",
-                9L
-        ));
-
-        items.add(new RegistrationReportItem(
-                "Maven para Avançados",
-                "maven",
-                "Charles",
-                "charles@alura.com.br",
-                9L
-        ));
+            items.add(new RegistrationReportItem(
+                    courseName,
+                    courseCode,
+                    instructorName,
+                    instructorEmail,
+                    totalEnrollments
+            ));
+        }
 
         return ResponseEntity.ok(items);
     }

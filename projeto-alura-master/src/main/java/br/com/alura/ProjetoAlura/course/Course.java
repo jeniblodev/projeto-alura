@@ -80,4 +80,9 @@ public class Course {
     }
 
     public LocalDateTime getInactivationDate() { return inactivationDate; }
+
+    public void inactivateCourse() {
+        this.status = Status.INACTIVE;
+        this.inactivationDate = LocalDateTime.now();
+    }
 }

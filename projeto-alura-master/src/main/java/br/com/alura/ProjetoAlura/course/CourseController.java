@@ -43,7 +43,10 @@ public class CourseController {
                 userRepository.findUserById(newCourse.getInstructorId());
 
         if (!instructor.getRole().equals((Role.INSTRUCTOR))) {
-            return ResponseEntity.badRequest().body("Este usuário não está registrado como instrutor e somente instrutores podem ser vinculados a cursos.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorItemDTO("role", "Este usuário não está registrado como instrutor e somente " +
+                            "instrutores podem ser " +
+                            "vinculados a cursos."));
         }
 
         if (!newCourse.getCode().matches("[a-z\\-]+") || newCourse.getCode().length() < 4 || newCourse.getCode().length() > 10) {

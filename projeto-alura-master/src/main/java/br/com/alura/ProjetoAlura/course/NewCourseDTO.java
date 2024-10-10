@@ -50,6 +50,10 @@ public class NewCourseDTO {
         return description;
     }
 
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }

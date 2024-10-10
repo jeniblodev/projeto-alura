@@ -1,7 +1,16 @@
 package br.com.alura.ProjetoAlura.course;
 
+import br.com.alura.ProjetoAlura.user.Role;
+import br.com.alura.ProjetoAlura.user.User;
+import br.com.alura.ProjetoAlura.user.UserListItemDTO;
+import br.com.alura.ProjetoAlura.user.UserRepository;
+import br.com.alura.ProjetoAlura.util.ErrorItemDTO;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
+import org.apache.tomcat.util.digester.Rule;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,14 +26,43 @@ public class CourseController {
 
     @Autowired
     private final CourseRepository courseRepository;
+    @Autowired
+    private final UserRepository userRepository;
 
-    public CourseController(CourseRepository courseRepository) { this.courseRepository = courseRepository; }
+    public CourseController(CourseRepository courseRepository, UserRepository userRepository) {
+        this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
+
+    }
 
     @PostMapping("/course/new")
-    public ResponseEntity createCourse(@Valid @RequestBody NewCourseDTO newCourse) {
+    public ResponseEntity createCourse(@Valid @RequestBody NewCourseDTO newCourse) throws ChangeSetPersister.NotFoundException {
         // TODO: Implementar a Questão 1 - Cadastro de Cursos aqui...
 
+        User instructor =
+                userRepository.findById(newCourse.getInstructorId()).orElseThrow(() -> new ChangeSetPersister.NotFoundException());
 
+        if (!instructor.getRole().equals((Role.INSTRUCTOR))) {
+            return ResponseEntity.badRequest().body("Este usuário não está registrado como instrutor e somente instrutores podem ser vinculados a cursos.");
+        }
+
+        if (!newCourse.getCode().matches("[a-z\\-]+") || newCourse.getCode().length() < 4 || newCourse.getCode().length() > 10) {
+            return ResponseEntity.badRequest().body("Código de curso inválido. O código do curso deve conter apenas " +
+                    "letras e hífen e ter entre 4 e 10 caracteres.");
+        }
+
+        if (courseRepository.existsByCode(newCourse.getCode())) {
+            return ResponseEntity.badRequest().body("Código já cadastrado no sistema");
+        }
+
+        Course course = new Course();
+        course.setName(newCourse.getName());
+        course.setCode(newCourse.getCode());
+        course.setInstructor(instructor);
+        course.setDescription(newCourse.getDescription());
+        course.setInactivationDate(null);
+
+        courseRepository.save(course);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

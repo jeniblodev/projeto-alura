@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Enrollments")
-public class Enrollment {
+@Table(name = "Registration")
+public class Registration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +32,10 @@ public class Enrollment {
     @Column (name = "registration_date")
     private LocalDateTime registrationDate;
 
-    public Enrollment() {
+    public Registration() {
     }
 
-    public Enrollment(User user, Course course) {
+    public Registration(User user, Course course) {
         this.user = user;
         this.course = course;
         this.registrationDate = LocalDateTime.now();

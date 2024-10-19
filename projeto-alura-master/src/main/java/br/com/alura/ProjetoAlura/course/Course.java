@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "course")
+@Table(name = "Course")
 public class Course {
 
 

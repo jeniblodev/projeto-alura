@@ -40,9 +40,9 @@ public class CourseControllerTest {
         newCourseDTO.setName("Aplicando LINQ no C#");
         newCourseDTO.setCode("linq-net");
         newCourseDTO.setDescription("Aprenda a utilizar LINQ nos seus projetos .NET");
-        newCourseDTO.setInstructorId(instructor.getId());
+        newCourseDTO.setInstructorEmail("jeniffer@email.com");
 
-        when(userRepository.findUserById(newCourseDTO.getInstructorId())).thenReturn(instructor);
+        when(userRepository.findByEmail(newCourseDTO.getInstructorEmail())).thenReturn(instructor);
         when(courseRepository.existsByCode(newCourseDTO.getCode())).thenReturn(false);
 
         mockMvc.perform(post("/course/new")
@@ -59,9 +59,9 @@ public class CourseControllerTest {
         newCourseDTO.setName("Testes com .NET");
         newCourseDTO.setCode("test-net");
         newCourseDTO.setDescription("Aprenda aplicar testes de unidade em seus projetos .NET");
-        newCourseDTO.setInstructorId(instructor.getId());
+        newCourseDTO.setInstructorEmail("daniel@email.com");
 
-        when(userRepository.findUserById(newCourseDTO.getInstructorId())).thenReturn(instructor);
+        when(userRepository.findByEmail(newCourseDTO.getInstructorEmail())).thenReturn(instructor);
 
         mockMvc.perform(post("/course/new")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,5 +69,60 @@ public class CourseControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Este usuário não está registrado como instrutor e somente " +
                         "instrutores podem ser vinculados a cursos."));
+    }
+
+    @Test
+    public void newCourse__should_return_bad_request_when_course_code_exists() throws Exception {
+        User instructor = new User("Jeniffer Bittencourt", "jeniffer@alura.com", Role.INSTRUCTOR, "password123");
+        NewCourseDTO newCourseDTO = new NewCourseDTO();
+        newCourseDTO.setName("Aplicando LINQ no C#");
+        newCourseDTO.setCode("linq-net");
+        newCourseDTO.setDescription("Aprenda a utilizar LINQ nos seus projetos .NET");
+        newCourseDTO.setInstructorEmail("jeniffer@alura.com");
+
+        when(userRepository.findByEmail(newCourseDTO.getInstructorEmail())).thenReturn(instructor);
+        when(courseRepository.existsByCode(newCourseDTO.getCode())).thenReturn(true);
+        mockMvc.perform(post("/course/new")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newCourseDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Código já cadastrado no sistema"));
+    }
+
+    @Test
+    public void inactivateCourse__should_return_ok_when_course_code_is_valid() throws Exception {
+        String courseCode = "linq-net";
+        User instructor = new User("Jeniffer Bittencourt", "jeniffer@alura.com", Role.INSTRUCTOR, "password123");
+        Course course = new Course("Aplicando LINQ no C#", courseCode, "Aprenda a utilizar o LINQ", instructor);
+
+        when(courseRepository.findByCode(courseCode)).thenReturn(course);
+
+        mockMvc.perform(post("/course/{code}/inactive", courseCode))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void inactivateCourse__should_return_bad_request_when_course_is_already_inactive() throws Exception {
+        String courseCode = "linq-net";
+        User instructor = new User("Jeniffer Bittencourt", "jeniffer@alura.com", Role.INSTRUCTOR, "password123");
+        Course course = new Course("Aplicando LINQ no C#", courseCode, "Aprenda a utilizar o LINQ", instructor);
+        course.setStatus(Status.INACTIVE);
+
+        when(courseRepository.findByCode(courseCode)).thenReturn(course);
+
+        mockMvc.perform(post("/course/{code}/inactive", courseCode))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Curso já está inativado."));
+    }
+
+    @Test
+    public void inactivateCourse__should_return_bad_request_when_course_not_found() throws Exception {
+        String courseCode = "course_not_found";
+
+        when(courseRepository.findByCode(courseCode)).thenReturn(null);
+
+        mockMvc.perform(post("/course/{code}/inactive", courseCode))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Código de curso não localizado."));
     }
 }

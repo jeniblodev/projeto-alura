@@ -49,12 +49,12 @@ public class CourseController {
                             "vinculados a cursos."));
         }
 
-        if (!newCourse.getCode().matches("[a-z\\-]+") || newCourse.getCode().length() < 4 || newCourse.getCode().length() > 10) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body(new ErrorItemDTO("invalid-code", "Código de curso inválido. O código do curso deve " +
-                                    "conter " +
-                                    "apenas letras e hífen e ter entre 4 e 10 caracteres."));
-        }
+//        if (!newCourse.getCode().matches("[a-z\\-]+") || newCourse.getCode().length() < 4 || newCourse.getCode().length() > 10) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                            .body(new ErrorItemDTO("invalid-code", "Código de curso inválido. O código do curso deve " +
+//                                    "conter " +
+//                                    "apenas letras e hífen e ter entre 4 e 10 caracteres."));
+//        }
 
         if (courseRepository.existsByCode(newCourse.getCode())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -85,10 +85,6 @@ public class Course {
 
     public LocalDateTime getInactivationDate() { return inactivationDate; }
 
-    public boolean isInactive(Status status) {
-        return Status.INACTIVE.equals(status);
-    }
-
     public void inactivateCourse() {
         this.status = Status.INACTIVE;
         this.inactivationDate = LocalDateTime.now();

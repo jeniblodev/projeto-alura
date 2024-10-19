@@ -77,15 +77,14 @@ public class CourseController {
                     .body(new ErrorItemDTO("code-null", "Código de curso não localizado."));
         }
 
-        if (course.isInactive(course.getStatus())) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorItemDTO("inactive-course", "O curso já está inativo na plataforma."));
+        if (course.getStatus() == Status.INACTIVE) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorItemDTO("status-inactive", "Curso já está inativado."));
         } else {
             course.inactivateCourse();
+            courseRepository.save(course);
         }
 
-
-        courseRepository.save(course);
         return ResponseEntity.ok().build();
     }
 

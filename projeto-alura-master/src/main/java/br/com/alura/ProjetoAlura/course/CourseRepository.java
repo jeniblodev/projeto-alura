@@ -11,11 +11,13 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     boolean existsByCode(String code);
     Course findByCode(String code);
 
-    @Query(value = "SELECT c.name as courseName, c.code as courseCode, i.name as UserName, i.email as UserEmail, COUNT(e.id) as totalEnrollments " +
+    @Query(value = "SELECT c.name as courseName, c.code as courseCode, i.name as InstructorName, i.email as " +
+            "InstructorEmail, " +
+            "COUNT(e.id) as totalRegistrations " +
             "FROM Course c " +
             "INNER JOIN User i ON c.instructor_id = i.id " +
             "INNER JOIN Registration e ON c.id = e.course_id " +
             "GROUP BY c.id, c.name, i.name, i.email " +
-            "ORDER BY totalEnrollments DESC", nativeQuery = true)
+            "ORDER BY totalRegistrations DESC", nativeQuery = true)
     List<RegistrationReportItemProjection> findCoursesWithEnrollmentCount();
 }
